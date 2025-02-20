@@ -11,12 +11,11 @@ from plain.models.migrations.utils import field_is_referenced, get_references
 from plain.models.options import DEFAULT_NAMES
 from plain.models.utils import make_model_tuple
 from plain.packages import PackageConfig
-from plain.packages.registry import PackagesRegistry
-from plain.packages.registry import packages_registry as global_packages
+from plain.models.registry import models_registry as global_models
 from plain.runtime import settings
 from plain.utils.functional import cached_property
 from plain.utils.module_loading import import_string
-
+from plain.models.registry import ModelsRegistry
 from .exceptions import InvalidBasesError
 from .utils import resolve_relation
 
@@ -559,7 +558,7 @@ class PackageConfigStub(PackageConfig):
         self.name = label
 
 
-class StatePackagesRegistry(PackagesRegistry):
+class StatePackagesRegistry(ModelsRegistry):
     """
     Subclass of the global Packages registry class to better handle dynamic model
     additions and removals.
@@ -573,7 +572,7 @@ class StatePackagesRegistry(PackagesRegistry):
         # mess things up with partial states (due to lack of dependencies)
         self.real_models = []
         for package_label in real_packages:
-            for model in global_packages.get_models(package_label=package_label):
+            for model in global_models.get_models(package_label=package_label):
                 self.real_models.append(ModelState.from_model(model, exclude_rels=True))
         # Populate the app registry with a stub for each application.
         package_labels = {model_state.package_label for model_state in models.values()}
@@ -581,12 +580,10 @@ class StatePackagesRegistry(PackagesRegistry):
             PackageConfigStub(label)
             for label in sorted([*real_packages, *package_labels])
         ]
-        super().__init__(package_configs)
+        super().__init__()
 
-        # These locks get in the way of copying as implemented in clone(),
-        # which is called whenever Plain duplicates a StatePackages before
-        # updating it.
-        self._lock = None
+        self.all_models = todo
+        self.ready = True
 
         self.render_multiple([*models.values(), *self.real_models])
 

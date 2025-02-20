@@ -66,7 +66,7 @@ from .lookups import Lookup, Transform
 from .manager import Manager
 from .query import Prefetch, QuerySet, prefetch_related_objects
 from .query_utils import FilteredRelation, Q
-from .registry import register_model
+from .registry import register_model, models_registry
 
 # Imports that would create circular imports if sorted
 from .base import DEFERRED, Model  # isort:skip
@@ -153,4 +153,4 @@ __all__ += [
 ]
 
 # Registry exports
-__all__ += ["register_model"]
+__all__ += ["register_model", "models_registry"]

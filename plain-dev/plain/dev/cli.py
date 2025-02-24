@@ -219,9 +219,14 @@ class Dev:
         ).parent.parent
         if not settings.PLAIN_TEMP_PATH.exists():
             settings.PLAIN_TEMP_PATH.mkdir()
-        src_path = settings.PLAIN_TEMP_PATH / "src"
-        if plain_path.exists() and not src_path.exists():
-            src_path.symlink_to(plain_path)
+        symlink_path = settings.PLAIN_TEMP_PATH / "src"
+
+        # Remove a broken symlink if it changed
+        if symlink_path.is_symlink() and not symlink_path.exists():
+            symlink_path.unlink()
+
+        if plain_path.exists() and not symlink_path.exists():
+            symlink_path.symlink_to(plain_path)
 
     def modify_hosts_file(self):
         """Modify the hosts file to map the custom domain to 127.0.0.1."""

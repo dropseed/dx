@@ -1,6 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
-class SessionsConfig(PackageConfig):
-    name = "plain.sessions"
+@register_config
+class Config(PackageConfig):
     label = "plainsessions"

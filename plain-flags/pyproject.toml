@@ -1,6 +1,6 @@
 [project]
 name = "plain.flags"
-version = "0.10.0"
+version = "0.11.0"
 description = "Feature flags for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

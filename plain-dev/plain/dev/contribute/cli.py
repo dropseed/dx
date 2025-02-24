@@ -10,8 +10,11 @@ import click
 @click.option(
     "--reset", is_flag=True, help="Undo any changes to pyproject.toml and uv.lock"
 )
+@click.option(
+    "--all", "all_packages", is_flag=True, help="Link all installed plain packages"
+)
 @click.argument("packages", nargs=-1)
-def cli(packages, repo, reset):
+def cli(packages, repo, reset, all_packages):
     """Contribute to plain by linking packages locally."""
 
     if reset:
@@ -51,6 +54,21 @@ def cli(packages, repo, reset):
 
     plain_packages = []
     plainx_packages = []
+
+    if all_packages:
+        # get all installed plain packages
+        output = subprocess.check_output(["uv", "pip", "freeze"])
+
+        installed_packages = output.decode()
+        if not installed_packages:
+            click.secho("No installed packages found", fg="red")
+            sys.exit(1)
+
+        packages = [
+            line.split("==")[0]
+            for line in installed_packages.splitlines()
+            if line.startswith("plain")
+        ]
 
     for package in packages:
         package = package.replace(".", "-")

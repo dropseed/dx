@@ -1,6 +1,6 @@
 [project]
 name = "plain.tailwind"
-version = "0.6.0"
+version = "0.8.0"
 description = "Integrate Tailwind CSS with Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

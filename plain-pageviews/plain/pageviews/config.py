@@ -1,6 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
+@register_config
 class Config(PackageConfig):
-    name = "plain.pageviews"
     label = "plainpageviews"

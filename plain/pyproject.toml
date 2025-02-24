@@ -1,6 +1,6 @@
 [project]
 name = "plain"
-version = "0.25.0"
+version = "0.26.0"
 description = "A web framework for building products with Python."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

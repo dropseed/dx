@@ -1,6 +1,6 @@
 [project]
 name = "plain.esbuild"
-version = "0.2.1"
+version = "0.4.0"
 description = ""
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

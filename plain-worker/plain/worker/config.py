@@ -1,8 +1,8 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 MODULE_NAME = "jobs"
 
 
+@register_config
 class PlainJobsConfig(PackageConfig):
-    name = "plain.worker"
     label = "plainworker"

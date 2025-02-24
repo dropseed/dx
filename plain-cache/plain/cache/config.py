@@ -1,6 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
-class PlainCacheConfig(PackageConfig):
-    name = "plain.cache"
+@register_config
+class Config(PackageConfig):
     label = "plaincache"

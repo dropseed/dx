@@ -1,6 +1,6 @@
 [project]
 name = "plain.importmap"
-version = "0.5.0"
+version = "0.6.0"
 description = "JavaScript import maps for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

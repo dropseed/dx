@@ -1,6 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
-class ForgeflagsConfig(PackageConfig):
-    name = "plain.flags"
+@register_config
+class Config(PackageConfig):
     label = "plainflags"  # Primarily for migrations

@@ -1,11 +1,11 @@
 from importlib import import_module
 from importlib.util import find_spec
 
-from plain.packages import PackageConfig, packages_registry
+from plain.packages import PackageConfig, packages_registry, register_config
 
 
+@register_config
 class Config(PackageConfig):
-    name = "plain.admin"
     label = "plainadmin"
 
     def ready(self):

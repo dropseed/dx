@@ -1,6 +1,6 @@
 [project]
 name = "plain.elements"
-version = "0.5.1"
+version = "0.6.0"
 description = "HTML-style includes for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

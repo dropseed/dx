@@ -1,6 +1,6 @@
 [project]
 name = "plain.admin"
-version = "0.19.3"
+version = "0.20.0"
 description = "Admin dashboard and tools for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

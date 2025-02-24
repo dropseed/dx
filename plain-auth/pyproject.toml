@@ -1,6 +1,6 @@
 [project]
 name = "plain.auth"
-version = "0.7.0"
+version = "0.8.0"
 description = "User authentication and authorization for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

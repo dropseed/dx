@@ -1,6 +1,6 @@
 [project]
 name = "plain.pages"
-version = "0.8.0"
+version = "0.9.0"
 description = "Simplified Markdown-based content for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

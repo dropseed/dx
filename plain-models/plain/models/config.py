@@ -1,13 +1,18 @@
 from importlib import import_module
 from importlib.util import find_spec
 
-from plain.packages import PackageConfig, packages_registry, models_registry
+from plain.packages import (
+    PackageConfig,
+    models_registry,
+    packages_registry,
+    register_config,
+)
 
 MODELS_MODULE_NAME = "models"
 
 
+@register_config
 class Config(PackageConfig):
-    name = "plain.models"
     # We want to use the "migrations" module
     # in this package but not for the standard purpose
     migrations_module = None

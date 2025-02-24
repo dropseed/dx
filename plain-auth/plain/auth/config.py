@@ -1,5 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
-class AuthConfig(PackageConfig):
-    name = "plain.auth"
+@register_config
+class Config(PackageConfig):
+    pass

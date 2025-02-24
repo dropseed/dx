@@ -1,6 +1,6 @@
-from plain.packages import PackageConfig
+from plain.packages import PackageConfig, register_config
 
 
-class PlainOAuthConfig(PackageConfig):
-    name = "plain.oauth"
+@register_config
+class Config(PackageConfig):
     label = "plainoauth"  # Primarily for migrations

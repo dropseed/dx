@@ -1,14 +1,13 @@
 import os
 
-from plain.packages import PackageConfig, packages_registry
+from plain.packages import PackageConfig, packages_registry, register_config
 from plain.runtime import APP_PATH
 
 from .registry import registry
 
 
-class PlainPagesConfig(PackageConfig):
-    name = "plain.pages"
-
+@register_config
+class Config(PackageConfig):
     def ready(self):
         for pacakge_config in packages_registry.get_package_configs():
             registry.discover_pages(

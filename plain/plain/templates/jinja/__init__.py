@@ -3,7 +3,7 @@ from importlib import import_module
 from plain.packages import packages_registry
 from plain.runtime import settings
 from plain.utils.functional import LazyObject
-from plain.utils.module_loading import import_string, module_has_submodule
+from plain.utils.module_loading import import_string
 
 from .environments import DefaultEnvironment, get_template_dirs
 
@@ -24,20 +24,25 @@ class JinjaEnvironment(LazyObject):
         # We have to set _wrapped before we trigger the autoloading of "register" commands
         self._wrapped = env
 
-        def _maybe_import_module(name):
-            if name not in self._imported_modules:
-                import_module(name)
-                self._imported_modules.add(name)
-
         for package_config in packages_registry.get_package_configs():
-            if module_has_submodule(package_config.module, "templates"):
-                # Allow this to fail in case there are import errors inside of their file
-                _maybe_import_module(f"{package_config.name}.templates")
-
-        app = import_module("app")
-        if module_has_submodule(app, "templates"):
             # Allow this to fail in case there are import errors inside of their file
-            _maybe_import_module("app.templates")
+            import_name = f"{package_config.name}.templates"
+            if import_name in self._imported_modules:
+                continue
+            try:
+                import_module(import_name)
+                self._imported_modules.add(import_name)
+            except ModuleNotFoundError:
+                pass
+
+        # Allow this to fail in case there are import errors inside of their file
+        import_name = "app.templates"
+        if import_name not in self._imported_modules:
+            try:
+                import_module(import_name)
+                self._imported_modules.add(import_name)
+            except ModuleNotFoundError:
+                pass
 
 
 environment = JinjaEnvironment()

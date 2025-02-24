@@ -1,6 +1,6 @@
 [project]
 name = "plain.vendor"
-version = "0.6.0"
+version = "0.7.0"
 description = "Vendor JS/CSS assets in Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

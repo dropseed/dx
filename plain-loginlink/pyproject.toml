@@ -1,6 +1,6 @@
 [project]
 name = "plain.loginlink"
-version = "0.6.1"
+version = "0.7.0"
 description = "Emailed link-based login for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

@@ -1,6 +1,6 @@
 [project]
 name = "plain.oauth"
-version = "0.9.1"
+version = "0.10.0"
 description = "OAuth login and API access for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"

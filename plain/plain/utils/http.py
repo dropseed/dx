@@ -1,40 +1,9 @@
-import base64
-import datetime
-import re
-import unicodedata
-from binascii import Error as BinasciiError
 from email.utils import formatdate
-from urllib.parse import quote, unquote, urlparse
+from urllib.parse import quote, unquote
 from urllib.parse import urlencode as original_urlencode
 
 from plain.utils.datastructures import MultiValueDict
-from plain.utils.regex_helper import _lazy_re_compile
 
-# Based on RFC 9110 Appendix A.
-ETAG_MATCH = _lazy_re_compile(
-    r"""
-    \A(      # start of string and capture group
-    (?:W/)?  # optional weak indicator
-    "        # opening quote
-    [^"]*    # any sequence of non-quote characters
-    "        # end quote
-    )\Z      # end of string and capture group
-""",
-    re.X,
-)
-
-MONTHS = "jan feb mar apr may jun jul aug sep oct nov dec".split()
-__D = r"(?P<day>[0-9]{2})"
-__D2 = r"(?P<day>[ 0-9][0-9])"
-__M = r"(?P<mon>\w{3})"
-__Y = r"(?P<year>[0-9]{4})"
-__Y2 = r"(?P<year>[0-9]{2})"
-__T = r"(?P<hour>[0-9]{2}):(?P<min>[0-9]{2}):(?P<sec>[0-9]{2})"
-RFC1123_DATE = _lazy_re_compile(rf"^\w{{3}}, {__D} {__M} {__Y} {__T} GMT$")
-RFC850_DATE = _lazy_re_compile(rf"^\w{{6,9}}, {__D}-{__M}-{__Y2} {__T} GMT$")
-ASCTIME_DATE = _lazy_re_compile(rf"^\w{{3}} {__M} {__D2} {__T} {__Y}$")
-
-RFC3986_GENDELIMS = ":/?#[]@"
 RFC3986_SUBDELIMS = "!$&'()*+,;="
 
 
@@ -93,57 +62,6 @@ def http_date(epoch_seconds=None):
     return formatdate(epoch_seconds, usegmt=True)
 
 
-def parse_http_date(date):
-    """
-    Parse a date format as specified by HTTP RFC 9110 Section 5.6.7.
-
-    The three formats allowed by the RFC are accepted, even if only the first
-    one is still in widespread use.
-
-    Return an integer expressed in seconds since the epoch, in UTC.
-    """
-    # email.utils.parsedate() does the job for RFC 1123 dates; unfortunately
-    # RFC 9110 makes it mandatory to support RFC 850 dates too. So we roll
-    # our own RFC-compliant parsing.
-    for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:
-        m = regex.match(date)
-        if m is not None:
-            break
-    else:
-        raise ValueError(f"{date!r} is not in a valid HTTP date format")
-    try:
-        tz = datetime.UTC
-        year = int(m["year"])
-        if year < 100:
-            current_year = datetime.datetime.now(tz=tz).year
-            current_century = current_year - (current_year % 100)
-            if year - (current_year % 100) > 50:
-                # year that appears to be more than 50 years in the future are
-                # interpreted as representing the past.
-                year += current_century - 100
-            else:
-                year += current_century
-        month = MONTHS.index(m["mon"].lower()) + 1
-        day = int(m["day"])
-        hour = int(m["hour"])
-        min = int(m["min"])
-        sec = int(m["sec"])
-        result = datetime.datetime(year, month, day, hour, min, sec, tzinfo=tz)
-        return int(result.timestamp())
-    except Exception as exc:
-        raise ValueError(f"{date!r} is not a valid date") from exc
-
-
-def parse_http_date_safe(date):
-    """
-    Same as parse_http_date, but return None if the input is invalid.
-    """
-    try:
-        return parse_http_date(date)
-    except Exception:
-        pass
-
-
 # Base 36 functions: useful for generating compact URLs
 
 
@@ -174,51 +92,6 @@ def int_to_base36(i):
     return b36
 
 
-def urlsafe_base64_encode(s):
-    """
-    Encode a bytestring to a base64 string for use in URLs. Strip any trailing
-    equal signs.
-    """
-    return base64.urlsafe_b64encode(s).rstrip(b"\n=").decode("ascii")
-
-
-def urlsafe_base64_decode(s):
-    """
-    Decode a base64 encoded string. Add back any trailing equal signs that
-    might have been stripped.
-    """
-    s = s.encode()
-    try:
-        return base64.urlsafe_b64decode(s.ljust(len(s) + len(s) % 4, b"="))
-    except (LookupError, BinasciiError) as e:
-        raise ValueError(e)
-
-
-def parse_etags(etag_str):
-    """
-    Parse a string of ETags given in an If-None-Match or If-Match header as
-    defined by RFC 9110. Return a list of quoted ETags, or ['*'] if all ETags
-    should be matched.
-    """
-    if etag_str.strip() == "*":
-        return ["*"]
-    else:
-        # Parse each ETag individually, and return any that are valid.
-        etag_matches = (ETAG_MATCH.match(etag.strip()) for etag in etag_str.split(","))
-        return [match[1] for match in etag_matches if match]
-
-
-def quote_etag(etag_str):
-    """
-    If the provided string is already a quoted ETag, return it. Otherwise, wrap
-    the string in quotes, making it a strong ETag.
-    """
-    if ETAG_MATCH.match(etag_str):
-        return etag_str
-    else:
-        return f'"{etag_str}"'
-
-
 def is_same_domain(host, pattern):
     """
     Return ``True`` if the host is either an exact match or a match
@@ -236,66 +109,6 @@ def is_same_domain(host, pattern):
         pattern[0] == "."
         and (host.endswith(pattern) or host == pattern[1:])
         or pattern == host
-    )
-
-
-def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
-    """
-    Return ``True`` if the url uses an allowed host and a safe scheme.
-
-    Always return ``False`` on an empty url.
-
-    If ``require_https`` is ``True``, only 'https' will be considered a valid
-    scheme, as opposed to 'http' and 'https' with the default, ``False``.
-
-    Note: "True" doesn't entail that a URL is "safe". It may still be e.g.
-    quoted incorrectly. Ensure to also use plain.utils.encoding.iri_to_uri()
-    on the path component of untrusted URLs.
-    """
-    if url is not None:
-        url = url.strip()
-    if not url:
-        return False
-    if allowed_hosts is None:
-        allowed_hosts = set()
-    elif isinstance(allowed_hosts, str):
-        allowed_hosts = {allowed_hosts}
-    # Chrome treats \ completely as / in paths but it could be part of some
-    # basic auth credentials so we need to check both URLs.
-    return _url_has_allowed_host_and_scheme(
-        url, allowed_hosts, require_https=require_https
-    ) and _url_has_allowed_host_and_scheme(
-        url.replace("\\", "/"), allowed_hosts, require_https=require_https
-    )
-
-
-def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
-    # Chrome considers any URL with more than two slashes to be absolute, but
-    # urlparse is not so flexible. Treat any url with three slashes as unsafe.
-    if url.startswith("///"):
-        return False
-    try:
-        url_info = urlparse(url)
-    except ValueError:  # e.g. invalid IPv6 addresses
-        return False
-    # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
-    # In that URL, example.com is not the hostname but, a path component. However,
-    # Chrome will still consider example.com to be the hostname, so we must not
-    # allow this syntax.
-    if not url_info.netloc and url_info.scheme:
-        return False
-    # Forbid URLs that start with control characters. Some browsers (like
-    # Chrome) ignore quite a few control characters at the start of a
-    # URL and might consider the URL as scheme relative.
-    if unicodedata.category(url[0])[0] == "C":
-        return False
-    scheme = url_info.scheme
-    # Consider URLs without a scheme (e.g. //example.com/p) to be http.
-    if not url_info.scheme and url_info.netloc:
-        scheme = "http"
-    valid_schemes = ["https"] if require_https else ["http", "https"]
-    return (not url_info.netloc or url_info.netloc in allowed_hosts) and (
-        not scheme or scheme in valid_schemes
     )
 
 
@@ -347,7 +160,7 @@ def parse_header_parameters(line):
                 value = value[1:-1]
                 value = value.replace("\\\\", "\\").replace('\\"', '"')
             if has_encoding:
-                encoding, lang, value = value.split("'")
+                encoding, _, value = value.split("'")
                 value = unquote(value, encoding=encoding)
             pdict[name] = value
     return key, pdict

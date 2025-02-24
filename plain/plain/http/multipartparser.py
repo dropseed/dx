@@ -399,8 +399,6 @@ class MultiPartParser:
             return None
         return file_name
 
-    IE_sanitize = sanitize_file_name
-
     def _close_files(self):
         # Free up all file handles.
         # FIXME: this currently assumes that upload handlers store the file as 'file'

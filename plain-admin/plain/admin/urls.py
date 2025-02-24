@@ -10,7 +10,6 @@ from .views.registry import registry
 class AdminIndexView(AdminView):
     template_name = "admin/index.html"
     title = "Dashboard"
-    slug = ""
 
     def get(self):
         # Slight hack to redirect to the first view that doesn't
@@ -24,7 +23,6 @@ class AdminIndexView(AdminView):
 class AdminSearchView(AdminView):
     template_name = "admin/search.html"
     title = "Search"
-    slug = "search"
 
     def get_template_context(self):
         context = super().get_template_context()

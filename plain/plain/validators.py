@@ -158,17 +158,6 @@ class URLValidator(RegexValidator):
             raise ValidationError(self.message, code=self.code, params={"value": value})
 
 
-integer_validator = RegexValidator(
-    _lazy_re_compile(r"^-?\d+\Z"),
-    message="Enter a valid integer.",
-    code="invalid",
-)
-
-
-def validate_integer(value):
-    return integer_validator(value)
-
-
 @deconstructible
 class EmailValidator:
     message = "Enter a valid email address."

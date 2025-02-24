@@ -1,12 +1,19 @@
-{% extends "admin/form.html" %}
+{% extends "admin/base.html" %}
 
-{% block form_content %}
-<div class="space-y-4">
+{% block content %}
+<form method="post" class="space-y-4">
+    {{ csrf_input }}
     <admin.InputField label="From pattern" field=form.from_pattern />
     <admin.InputField label="To pattern" field=form.to_pattern />
     <admin.CheckboxField label="Use regular expressions" field=form.is_regex />
     <admin.InputField label="HTTP status code" field=form.http_status />
     <admin.InputField label="Order" field=form.order />
     <admin.CheckboxField label="Enabled" field=form.enabled />
-</div>
+
+    <div class="flex justify-end">
+        <button class="mt-5" type="submit">
+            Save
+        </button>
+    </div>
+</form>
 {% endblock %}

@@ -108,7 +108,7 @@ def path(route: str | re.Pattern, view: "View", *, name: str = "") -> URLPattern
         )
 
     # You typically pass a View class and we call as_view() for you
-    if issubclass(view, View):
+    if isinstance(view, type) and issubclass(view, View):
         return URLPattern(pattern=pattern, view=view.as_view(), name=name)
 
     # If you called View.as_view() yourself (or technically any callable)

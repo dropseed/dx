@@ -42,7 +42,6 @@ REASON_INVALID_CHARACTERS = "has invalid characters"
 CSRF_SECRET_LENGTH = 32
 CSRF_TOKEN_LENGTH = 2 * CSRF_SECRET_LENGTH
 CSRF_ALLOWED_CHARS = string.ascii_letters + string.digits
-CSRF_SESSION_KEY = "_csrftoken"
 
 
 def _get_new_csrf_string():

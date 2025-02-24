@@ -9,10 +9,10 @@
     Toggle raw values
 </button>
 
-<dl class="text-sm mt-3 w-full grid grid-cols-[max-content,1fr] gap-y-2 gap-x-8" style="grid-template-columns: max-content 1fr;">
+<dl class="text-sm mt-3 w-full grid !grid-cols-1 sm:!grid-cols-[max-content,1fr] sm:gap-y-2 gap-x-8" style="grid-template-columns: max-content 1fr;">
     {% for field in fields %}
-    <dt class="font-semibold"><code>{{ field }}</code></dt>
-    <dd class="flex items-center">
+    <dt class="font-medium mt-4 sm:mt-0"><code>{{ field }}</code></dt>
+    <dd class="flex items-center mt-1 sm:mt-0">
         {% with value=get_field_value(object, field) %}
         <div class="raw-value hidden"><code>{{ value }}</code></div>
         <div class="pretty-value">{% include get_field_value_template(object, field, value) with context %}</div>

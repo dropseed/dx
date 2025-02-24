@@ -1,8 +1,16 @@
-{% extends "admin/form.html" %}
+{% extends "admin/base.html" %}
 
-{% block form_content %}
-<div class="space-y-4">
+{% block content %}
+
+<form method="post" class="space-y-4">
+    {{ csrf_input }}
     <admin.InputField label="Key" field=form.key />
     <admin.InputField label="Value" field=form.value />
-</div>
+    <div class="flex justify-end">
+        <button class="mt-5" type="submit">
+            Save
+        </button>
+    </div>
+</form>
+
 {% endblock %}

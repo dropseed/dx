@@ -30,7 +30,7 @@ Now in your template you can use the `asset()` function to get the URL:
 
 ## Local development
 
-When you're working with `settings.DEBUG = True`, the assets will be served directly from their original location. You don't need to run `plain compile` or configure anything else.
+When you're working with `settings.DEBUG = True`, the assets will be served directly from their original location. You don't need to run `plain build` or configure anything else.
 
 
 ## Production deployment
@@ -38,7 +38,7 @@ When you're working with `settings.DEBUG = True`, the assets will be served dire
 In production, one of your deployment steps should be to compile the assets.
 
 ```bash
-plain compile
+plain build
 ```
 
 By default, this generates "fingerprinted" and compressed versions of the assets, which are then served by your app. This means that a file like `main.css` will result in two new files, like `main.d0db67b.css` and `main.d0db67b.css.gz`.
@@ -61,7 +61,7 @@ url = get_asset_url("css/style.css")
 The generated/copied files are stored in `{repo}/.plain/assets/compiled`. If you need them to be somewhere else, try simply moving them after compilation.
 
 ```bash
-plain compile
+plain build
 mv .plain/assets/compiled /path/to/your/static
 ```
 
@@ -70,7 +70,7 @@ mv .plain/assets/compiled /path/to/your/static
 The steps for this will vary, but the general idea is to compile them, and then upload the compiled assets.
 
 ```bash
-plain compile
+plain build
 ./example-upload-to-cdn-script
 ```
 
@@ -86,7 +86,7 @@ ASSETS_BASE_URL = "https://cdn.example.com/"
 
 The default behavior is to fingerprint assets, which is an exact copy of the original file but with a different filename. The originals aren't copied over because you should generally always use this fingerprinted path (that automatically uses longer-lived caching).
 
-If you need the originals for any reason, you can use `plain compile --keep-original`, though this will typically be combined with `--no-fingerprint` otherwise the fingerprinted files will still get priority in `{{ asset() }}` template calls.
+If you need the originals for any reason, you can use `plain build --keep-original`, though this will typically be combined with `--no-fingerprint` otherwise the fingerprinted files will still get priority in `{{ asset() }}` template calls.
 
 
 ### What about source maps or imported css files?

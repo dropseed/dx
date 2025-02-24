@@ -22,7 +22,7 @@ class PackageRegistryNotReady(Exception):
 class ObjectDoesNotExist(Exception):
     """The requested object does not exist"""
 
-    silent_variable_failure = True
+    pass
 
 
 class MultipleObjectsReturned(Exception):
@@ -86,12 +86,6 @@ class RequestDataTooBig(SuspiciousOperation):
     pass
 
 
-class RequestAborted(Exception):
-    """The request was closed before it was completed, or timed out."""
-
-    pass
-
-
 class BadRequest(Exception):
     """The request is malformed and cannot be processed."""
 
@@ -100,12 +94,6 @@ class BadRequest(Exception):
 
 class PermissionDenied(Exception):
     """The user did not have permission to do that"""
-
-    pass
-
-
-class ViewDoesNotExist(Exception):
-    """The requested view does not exist"""
 
     pass
 
@@ -170,14 +158,6 @@ class ValidationError(Exception):
             self.code = code
             self.params = params
             self.error_list = [self]
-
-    @property
-    def message_dict(self):
-        # Trigger an AttributeError if this ValidationError
-        # doesn't have an error_dict.
-        getattr(self, "error_dict")
-
-        return dict(self)
 
     @property
     def messages(self):

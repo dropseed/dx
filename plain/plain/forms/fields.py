@@ -819,7 +819,7 @@ class ChoiceField(Field):
         for k, v in self.choices:
             if isinstance(v, list | tuple):
                 # This is an optgroup, so look inside the group for options
-                for k2, v2 in v:
+                for k2, _ in v:
                     if value == k2 or text_value == str(k2):
                         return True
             else:
@@ -945,9 +945,13 @@ class JSONField(CharField):
         "invalid": "Enter a valid JSON.",
     }
 
-    def __init__(self, encoder=None, decoder=None, **kwargs):
+    def __init__(
+        self, encoder=None, decoder=None, indent=None, sort_keys=False, **kwargs
+    ):
         self.encoder = encoder
         self.decoder = decoder
+        self.indent = indent
+        self.sort_keys = sort_keys
         super().__init__(**kwargs)
 
     def to_python(self, value):
@@ -983,7 +987,13 @@ class JSONField(CharField):
     def prepare_value(self, value):
         if isinstance(value, InvalidJSONInput):
             return value
-        return json.dumps(value, ensure_ascii=False, cls=self.encoder)
+        return json.dumps(
+            value,
+            indent=self.indent,
+            sort_keys=self.sort_keys,
+            ensure_ascii=False,
+            cls=self.encoder,
+        )
 
     def has_changed(self, initial, data):
         if super().has_changed(initial, data):

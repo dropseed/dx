@@ -98,10 +98,3 @@ def get_warning_for_invalid_pattern(pattern):
             id="urls.E004",
         )
     ]
-
-
-def E006(name):
-    return Error(
-        f"The {name} setting must end with a slash.",
-        id="urls.E006",
-    )

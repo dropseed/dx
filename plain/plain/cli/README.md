@@ -24,13 +24,11 @@ __all__ = [
 ]
 ```
 
-### `plain compile`
+### `plain build`
 
 Compile static assets (used in the deploy/production process).
 
-Automatically runs `plain tailwind compile` if [plain-tailwind](https://plainframework.com/docs/plain-tailwind/) is installed.
-
-Automatically runs `npm run compile` if you have a `package.json` with `scripts.compile`.
+Automatically runs `plain tailwind build` if [plain-tailwind](https://plainframework.com/docs/plain-tailwind/) is installed.
 
 ### `plain run`
 

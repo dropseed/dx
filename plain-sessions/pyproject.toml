@@ -1,6 +1,6 @@
 [project]
 name = "plain.sessions"
-version = "0.8.1"
+version = "0.9.0"
 description = "Session management for Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 readme = "README.md"

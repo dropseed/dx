@@ -1,0 +1,2 @@
+#!/bin/sh -e
+uvx vulture . --exclude .venv --ignore-decorators "@register*,@cli*"

@@ -5,7 +5,6 @@ from io import BytesIO
 from itertools import chain
 from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlsplit
 
-from plain import signing
 from plain.exceptions import (
     DisallowedHost,
     ImproperlyConfigured,
@@ -24,12 +23,11 @@ from plain.utils.datastructures import (
     ImmutableList,
     MultiValueDict,
 )
-from plain.utils.encoding import escape_uri_path, iri_to_uri
+from plain.utils.encoding import iri_to_uri
 from plain.utils.functional import cached_property
 from plain.utils.http import is_same_domain, parse_header_parameters
 from plain.utils.regex_helper import _lazy_re_compile
 
-RAISE_ERROR = object()
 host_validation_re = _lazy_re_compile(
     r"^([a-z0-9.-]+|\[[a-f0-9]*:[a-f0-9\.:]+\])(:[0-9]+)?$"
 )
@@ -177,12 +175,26 @@ class HttpRequest:
     def get_full_path(self, force_append_slash=False):
         return self._get_full_path(self.path, force_append_slash)
 
-    def get_full_path_info(self, force_append_slash=False):
-        return self._get_full_path(self.path_info, force_append_slash)
-
     def _get_full_path(self, path, force_append_slash):
         # RFC 3986 requires query string arguments to be in the ASCII range.
         # Rather than crash if this doesn't happen, we encode defensively.
+
+        def escape_uri_path(path):
+            """
+            Escape the unsafe characters from the path portion of a Uniform Resource
+            Identifier (URI).
+            """
+            # These are the "reserved" and "unreserved" characters specified in RFC
+            # 3986 Sections 2.2 and 2.3:
+            #   reserved    = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+            #   unreserved  = alphanum | mark
+            #   mark        = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+            # The list of safe characters here is constructed subtracting ";", "=",
+            # and "?" according to RFC 3986 Section 3.3.
+            # The reason for not subtracting and escaping "/" is that we are escaping
+            # the entire path, not a path segment.
+            return quote(path, safe="/:@&+$,-_.!~*'()")
+
         return "{}{}{}".format(
             escape_uri_path(path),
             "/" if force_append_slash and not path.endswith("/") else "",
@@ -190,30 +202,6 @@ class HttpRequest:
             if self.META.get("QUERY_STRING", "")
             else "",
         )
-
-    def get_signed_cookie(self, key, default=RAISE_ERROR, salt="", max_age=None):
-        """
-        Attempt to return a signed cookie. If the signature fails or the
-        cookie has expired, raise an exception, unless the `default` argument
-        is provided,  in which case return that value.
-        """
-        try:
-            cookie_value = self.COOKIES[key]
-        except KeyError:
-            if default is not RAISE_ERROR:
-                return default
-            else:
-                raise
-        try:
-            value = signing.get_cookie_signer(salt=key + salt).unsign(
-                cookie_value, max_age=max_age
-            )
-        except signing.BadSignature:
-            if default is not RAISE_ERROR:
-                return default
-            else:
-                raise
-        return value
 
     def build_absolute_uri(self, location=None):
         """
@@ -470,20 +458,9 @@ class HttpHeaders(CaseInsensitiveMapping):
         return f"{cls.HTTP_PREFIX}{header}"
 
     @classmethod
-    def to_asgi_name(cls, header):
-        return header.replace("-", "_").upper()
-
-    @classmethod
     def to_wsgi_names(cls, headers):
         return {
             cls.to_wsgi_name(header_name): value
-            for header_name, value in headers.items()
-        }
-
-    @classmethod
-    def to_asgi_names(cls, headers):
-        return {
-            cls.to_asgi_name(header_name): value
             for header_name, value in headers.items()
         }
 

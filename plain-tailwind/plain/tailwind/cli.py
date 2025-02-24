@@ -44,7 +44,7 @@ def init():
 @cli.command()
 @click.option("--watch", is_flag=True)
 @click.option("--minify", is_flag=True)
-def compile(watch, minify):
+def build(watch, minify):
     """Compile a Tailwind CSS file"""
     tailwind = Tailwind()
 

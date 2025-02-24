@@ -1,6 +1,6 @@
 [project]
 name = "plain.tailwind"
-version = "0.5.1"
+version = "0.6.0"
 description = "Integrate Tailwind CSS with Plain."
 authors = [{name = "Dave Gaeddert", email = "dave.gaeddert@dropseed.dev"}]
 license = "BSD-3-Clause"
@@ -13,10 +13,10 @@ dependencies = [
 ]
 
 [project.entry-points."plain.dev"]
-"tailwind" = "plain.tailwind.entrypoints:run_dev_compile"
+"tailwind" = "plain.tailwind.entrypoints:run_dev_build"
 
-[project.entry-points."plain.assets.compile"]
-"tailwind" = "plain.tailwind.entrypoints:run_compile"
+[project.entry-points."plain.build"]
+"tailwind" = "plain.tailwind.entrypoints:run_build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["plain"]

@@ -12,10 +12,10 @@ dependencies = [
 ]
 
 [project.entry-points."plain.dev"]
-"esbuild" = "plain.esbuild.entrypoints:run_dev_compile"
+"esbuild" = "plain.esbuild.entrypoints:run_dev_build"
 
-[project.entry-points."plain.assets.compile"]
-"esbuild" = "plain.esbuild.entrypoints:run_compile"
+[project.entry-points."plain.build"]
+"esbuild" = "plain.esbuild.entrypoints:run_build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["plain"]

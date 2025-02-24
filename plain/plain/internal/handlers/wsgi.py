@@ -1,10 +1,10 @@
 import uuid
 from io import IOBase
+from urllib.parse import quote
 
 from plain import signals
 from plain.http import HttpRequest, QueryDict, parse_cookie
 from plain.internal.handlers import base
-from plain.utils.encoding import repercent_broken_unicode
 from plain.utils.functional import cached_property
 from plain.utils.regex_helper import _lazy_re_compile
 
@@ -160,6 +160,23 @@ class WSGIHandler(base.BaseHandler):
 def get_path_info(environ):
     """Return the HTTP request's PATH_INFO as a string."""
     path_info = get_bytes_from_wsgi(environ, "PATH_INFO", "/")
+
+    def repercent_broken_unicode(path):
+        """
+        As per RFC 3987 Section 3.2, step three of converting a URI into an IRI,
+        repercent-encode any octet produced that is not part of a strictly legal
+        UTF-8 octet sequence.
+        """
+        while True:
+            try:
+                path.decode()
+            except UnicodeDecodeError as e:
+                # CVE-2019-14235: A recursion shouldn't be used since the exception
+                # handling uses massive amounts of memory
+                repercent = quote(path[e.start : e.end], safe=b"/#%[]=:;$&()+,!?*@'~")
+                path = path[: e.start] + repercent.encode() + path[e.end :]
+            else:
+                return path
 
     return repercent_broken_unicode(path_info).decode()
 

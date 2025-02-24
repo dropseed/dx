@@ -25,40 +25,9 @@ def get_func_args(func):
     ]
 
 
-def get_func_full_args(func):
-    """
-    Return a list of (argument name, default value) tuples. If the argument
-    does not have a default value, omit it in the tuple. Arguments such as
-    *args and **kwargs are also included.
-    """
-    params = _get_callable_parameters(func)
-    args = []
-    for param in params:
-        name = param.name
-        # Ignore 'self'
-        if name == "self":
-            continue
-        if param.kind == inspect.Parameter.VAR_POSITIONAL:
-            name = "*" + name
-        elif param.kind == inspect.Parameter.VAR_KEYWORD:
-            name = "**" + name
-        if param.default != inspect.Parameter.empty:
-            args.append((name, param.default))
-        else:
-            args.append((name,))
-    return args
-
-
 def func_accepts_kwargs(func):
     """Return True if function 'func' accepts keyword arguments **kwargs."""
     return any(p for p in _get_callable_parameters(func) if p.kind == p.VAR_KEYWORD)
-
-
-def func_accepts_var_args(func):
-    """
-    Return True if function 'func' accepts positional arguments *args.
-    """
-    return any(p for p in _get_callable_parameters(func) if p.kind == p.VAR_POSITIONAL)
 
 
 def method_has_no_args(meth):
@@ -67,7 +36,3 @@ def method_has_no_args(meth):
         [p for p in _get_callable_parameters(meth) if p.kind == p.POSITIONAL_OR_KEYWORD]
     )
     return count == 0 if inspect.ismethod(meth) else count == 1
-
-
-def func_supports_parameter(func, name):
-    return any(param.name == name for param in _get_callable_parameters(func))

@@ -15,7 +15,7 @@ def cli():
 
 @cli.command()
 @click.option("--minify", is_flag=True, default=True)
-def compile(minify):
+def build(minify):
     returncode = 0
     for asset in iter_assets():
         if ".esbuild." in asset.absolute_path:
@@ -35,7 +35,7 @@ def compile(minify):
 @click.pass_context
 def dev(ctx):
     # Do an initial build of the assets
-    ctx.invoke(compile, minify=False)
+    ctx.invoke(build, minify=False)
 
     asset_dirs = list(iter_asset_dirs())
 

@@ -67,18 +67,26 @@ class AdminViewRegistry:
     def get_urls(self):
         urls = []
 
-        paths_seen = set()
-
-        def add_view_path(view, _path):
-            if _path in paths_seen:
-                raise ValueError(f"Path {_path} already registered")
-            paths_seen.add(_path)
-            if not _path.endswith("/"):
-                _path += "/"
-            urls.append(path(_path, view, name=view.view_name()))
+        paths_seen = {}
 
         for view in self.registered_views:
-            add_view_path(view, f"p/{view.get_path()}")
+            view_path = view.get_path()
+
+            if not view_path:
+                raise ValueError(f"Path for {view} is empty")
+
+            if existing_view := paths_seen.get(view_path, None):
+                raise ValueError(
+                    f"Duplicate admin path {view_path}\n{existing_view}\n{view}"
+                )
+
+            paths_seen[view_path] = view
+
+            # Append trailing slashes automatically
+            if not view_path.endswith("/"):
+                view_path += "/"
+
+            urls.append(path(f"p/{view_path}", view, name=view.view_name()))
 
         return urls
 

@@ -53,7 +53,6 @@ class BaseForm:
     class.
     """
 
-    field_order = None
     prefix = None
 
     def __init__(

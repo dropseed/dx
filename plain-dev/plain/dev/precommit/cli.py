@@ -79,8 +79,8 @@ def cli(install):
             check_short("Running Plain checks (without database)", "plain", "preflight")
             click.secho("--> Skipping migration checks", bold=True, fg="yellow")
 
-        print_event("Running plain compile")
-        result = subprocess.run(["plain", "compile"])
+        print_event("Running plain build")
+        result = subprocess.run(["plain", "build"])
         if result.returncode != 0:
             sys.exit(result.returncode)
 

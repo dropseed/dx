@@ -1,3 +1,4 @@
-<label for="{{ field.html_id }}" class="block text-sm font-medium">
-    {{ caller() }}
+<label for="{{ field.html_id }}" class="flex items-baseline justify-between w-full">
+    <div class="text-sm font-medium">{{ caller() }}</div>
+    {% if not field.field.required %}<div class="text-white/60 text-xs">Optional</div>{% endif %}
 </label>

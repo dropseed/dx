@@ -20,7 +20,7 @@ The `plain dev` command does several things:
 - Runs `plain preflight` to check for any issues
 - Executes any pending model migrations
 - Starts `gunicorn` with `--reload`
-- Runs `plain tailwind compile --watch`, if `plain.tailwind` is installed
+- Runs `plain tailwind build --watch`, if `plain.tailwind` is installed
 - Any custom process defined in `pyproject.toml` at `tool.plain.dev.run`
 - Necessary services (ex. Postgres) defined in `pyproject.toml` at `tool.plain.dev.services`
 
@@ -62,7 +62,7 @@ Runs:
 - `plain preflight --database default`
 - `plain migrate --check`
 - `plain makemigrations --dry-run --check`
-- `plain compile`
+- `plain build`
 - `plain test`
 
 ## VS Code debugging

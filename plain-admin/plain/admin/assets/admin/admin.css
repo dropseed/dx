@@ -61,6 +61,12 @@ main a:hover {
     border-radius: 6px;
     transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
     cursor: pointer;
+    flex-shrink: 0;
+
+    @media (max-width: 640px) {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
 
     &:hover {
         background-color: #2a2928;
@@ -76,6 +82,20 @@ main a:hover {
 
     &:focus {
         outline: 2px solid #e5e7eb;
+        outline-offset: 2px;
+    }
+}
+
+main button[type="submit"] {
+    background-color: #2563eb;
+    border-color: #2563eb;
+
+    &:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+    }
+    &:focus {
+        outline: 2px solid #2563eb;
         outline-offset: 2px;
     }
 }

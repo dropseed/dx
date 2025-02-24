@@ -1,5 +1,5 @@
 import os
-from io import BytesIO, StringIO, UnsupportedOperation
+from io import UnsupportedOperation
 
 from plain.internal.files.utils import FileProxyMixin
 from plain.utils.functional import cached_property
@@ -116,34 +116,6 @@ class File(FileProxyMixin):
 
     def close(self):
         self.file.close()
-
-
-class ContentFile(File):
-    """
-    A File-like object that takes just raw content, rather than an actual file.
-    """
-
-    def __init__(self, content, name=None):
-        stream_class = StringIO if isinstance(content, str) else BytesIO
-        super().__init__(stream_class(content), name=name)
-        self.size = len(content)
-
-    def __str__(self):
-        return "Raw content"
-
-    def __bool__(self):
-        return True
-
-    def open(self, mode=None):
-        self.seek(0)
-        return self
-
-    def close(self):
-        pass
-
-    def write(self, data):
-        self.__dict__.pop("size", None)  # Clear the computed size.
-        return self.file.write(data)
 
 
 def endswith_cr(line):

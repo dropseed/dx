@@ -2,7 +2,6 @@ from enum import Enum
 
 from plain.http import HttpRequest
 from plain.templates import Template
-from plain.utils.text import slugify
 from plain.views import View
 
 
@@ -22,7 +21,6 @@ class Card:
     title: str
 
     # Optional fields
-    slug: str = ""
     description: str = ""
     text: str = ""
     link: str = ""
@@ -60,8 +58,9 @@ class Card:
     def get_title(self) -> str:
         return self.title
 
-    def get_slug(self) -> str:
-        return self.slug or slugify(self.title)
+    @classmethod
+    def get_slug(cls) -> str:
+        return f"{cls.__module__}.{cls.__name__}".lower().replace(".", "_")
 
     def get_description(self) -> str:
         return self.description

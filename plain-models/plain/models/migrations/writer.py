@@ -4,7 +4,7 @@ from importlib import import_module
 
 from plain.models import migrations
 from plain.models.migrations.loader import MigrationLoader
-from plain.models.migrations.serializer import Serializer, serializer_factory
+from plain.models.migrations.serializer import serializer_factory
 from plain.packages import packages_registry
 from plain.runtime import __version__
 from plain.utils.inspect import get_func_args
@@ -275,14 +275,6 @@ class MigrationWriter:
     @classmethod
     def serialize(cls, value):
         return serializer_factory(value).serialize()
-
-    @classmethod
-    def register_serializer(cls, type_, serializer):
-        Serializer.register(type_, serializer)
-
-    @classmethod
-    def unregister_serializer(cls, type_):
-        Serializer.unregister(type_)
 
 
 MIGRATION_HEADER_TEMPLATE = """\

@@ -306,18 +306,6 @@ class AdminDetailView(AdminView, DetailView):
 
         return links
 
-    def get_success_url(self, form):
-        if detail_url := self.get_detail_url(self.object):
-            return detail_url
-
-        if list_url := self.get_list_url():
-            return list_url
-
-        if update_url := self.get_update_url(self.object):
-            return update_url
-
-        return super().get_success_url(form)
-
 
 class AdminUpdateView(AdminView, UpdateView):
     template_name = None
@@ -354,6 +342,18 @@ class AdminUpdateView(AdminView, UpdateView):
             links["Delete"] = delete_url
 
         return links
+
+    def get_success_url(self, form):
+        if detail_url := self.get_detail_url(self.object):
+            return detail_url
+
+        if list_url := self.get_list_url():
+            return list_url
+
+        if update_url := self.get_update_url(self.object):
+            return update_url
+
+        return super().get_success_url(form)
 
 
 class AdminDeleteView(AdminView, DeleteView):

@@ -1,11 +1,11 @@
-from .cli import compile
+from .cli import build
 
 
-def run_dev_compile():
+def run_dev_build():
     # This will run by itself as a command, so it can exit()
-    compile(["--watch"], standalone_mode=True)
+    build(["--watch"], standalone_mode=True)
 
 
-def run_compile():
+def run_build():
     # Standalone mode prevents it from exit()ing
-    compile([], standalone_mode=False)
+    build([], standalone_mode=False)

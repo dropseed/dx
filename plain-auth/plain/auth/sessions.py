@@ -4,8 +4,6 @@ from plain.packages import packages_registry as plain_packages
 from plain.runtime import settings
 from plain.utils.crypto import constant_time_compare, salted_hmac
 
-from .signals import user_logged_in, user_logged_out
-
 USER_ID_SESSION_KEY = "_auth_user_id"
 USER_HASH_SESSION_KEY = "_auth_user_hash"
 
@@ -71,7 +69,6 @@ def login(request, user):
     if hasattr(request, "user"):
         request.user = user
     rotate_token(request)
-    user_logged_in.send(sender=user.__class__, request=request, user=user)
 
 
 def logout(request):
@@ -81,8 +78,6 @@ def logout(request):
     """
     # Dispatch the signal before the user is logged out so the receivers have a
     # chance to find out *who* logged out.
-    user = getattr(request, "user", None)
-    user_logged_out.send(sender=user.__class__, request=request, user=user)
     request.session.flush()
     if hasattr(request, "user"):
         request.user = None

@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 from plain.auth.views import AuthViewMixin
 from plain.urls import reverse
 from plain.utils import timezone
-from plain.utils.text import slugify
 from plain.views import (
     TemplateView,
 )
@@ -22,7 +21,6 @@ class AdminView(AuthViewMixin, TemplateView):
     admin_required = True
 
     title: str = ""
-    slug: str = ""
     path: str = ""
     description: str = ""
     image: Img | None = None
@@ -69,15 +67,7 @@ class AdminView(AuthViewMixin, TemplateView):
 
     @classmethod
     def get_slug(cls) -> str:
-        if cls.slug:
-            return cls.slug
-
-        if cls.title:
-            return slugify(cls.title)
-
-        raise NotImplementedError(
-            f"Please set a slug on the {cls} class or implement get_slug()."
-        )
+        return f"{cls.__module__}.{cls.__qualname__}".lower().replace(".", "_")
 
     # Can actually use @classmethod, @staticmethod or regular method for these?
     def get_title(self) -> str:
@@ -91,15 +81,7 @@ class AdminView(AuthViewMixin, TemplateView):
 
     @classmethod
     def get_path(cls) -> str:
-        if cls.path:
-            return cls.path
-
-        if slug := cls.get_slug():
-            return slug
-
-        raise NotImplementedError(
-            f"Please set a path on the {cls} class or implement get_slug() or get_path()."
-        )
+        return cls.path
 
     @classmethod
     def get_parent_view_classes(cls) -> list["AdminView"]:

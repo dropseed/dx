@@ -205,13 +205,6 @@ def _lazy_proxy_unpickle(func, args, kwargs, *resultclasses):
     return lazy(func, *resultclasses)(*args, **kwargs)
 
 
-def lazystr(text):
-    """
-    Shortcut for the common case of a lazy callable that returns str.
-    """
-    return lazy(str, str)(text)
-
-
 def keep_lazy(*resultclasses):
     """
     A decorator that allows a function to be called with one or more lazy

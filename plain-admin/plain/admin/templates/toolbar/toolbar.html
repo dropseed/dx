@@ -1,15 +1,10 @@
 {% if toolbar.should_render() %}
 {% set exception=toolbar.request_exception() %}
 <script src="{{ asset('toolbar/toolbar.js') }}"></script>
-<div id="plaintoolbar" class="print:hidden text-sm py-1.5 text-stone-300 bg-stone-950 fixed bottom-3 mx-3 max-w-full drop-shadow-md z-30 rounded-2xl lg:flex lg:flex-col -translate-x-1/2 left-1/2 max-h-[90vh]">
-    <div class="flex justify-between px-4 mx-auto space-x-4">
+<div id="plaintoolbar" class="print:hidden text-sm py-1.5 text-stone-300 fixed bottom-3 mx-3 max-w-full drop-shadow-sm z-30 ring-1 ring-stone-200/5 rounded-2xl lg:flex lg:flex-col -translate-x-1/2 left-1/2 max-h-[90vh] bg-gradient-to-b from-stone-950/90 to-stone-950/95 backdrop-blur-sm">
+    <div class="flex justify-between px-3 mx-auto space-x-4">
         <div class="flex items-center">
-            <svg class="h-4 w-4" width="160" height="125" viewBox="0 0 160 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4.78467" y="4.79785" width="150.978" height="115.404" rx="5" stroke="#ffffff" stroke-width="8"/>
-                <path d="M151.762 60.3705C99.2596 39.3233 80.202 66.8232 8.78467 60.3705V116.2H151.762V60.3705Z" fill="#ffffff"/>
-                <path d="M51.104 8.08887H108.179V10.7668C108.179 12.6998 106.612 14.2668 104.679 14.2668H54.604C52.671 14.2668 51.104 12.6998 51.104 10.7668V8.08887Z" fill="#ffffff" stroke="#ffffff"/>
-            </svg>
-            <code class="ml-2 text-xs whitespace-nowrap text-mono">{{ toolbar.version }}</code>
+            <code class="ml-1.5 text-xs whitespace-nowrap text-mono">{{ toolbar.version }}</code>
 
             {% if request.impersonator is defined %}
             <div class="flex items-center ml-1 font-light">

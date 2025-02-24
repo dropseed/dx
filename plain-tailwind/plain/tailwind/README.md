@@ -15,7 +15,7 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  compile  Compile a Tailwind CSS file
+  build  Compile a Tailwind CSS file
   init     Install Tailwind, create a tailwind.config.js...
   update   Update the Tailwind CSS version
 ```
@@ -42,16 +42,16 @@ This will also create a `tailwind.css` file at `static/src/tailwind.css` where a
 You can customize where these files are located if you need to,
 but this is the default (requires `STATICFILES_DIR = BASE_DIR / "static"`).
 
-The `src/tailwind.css` file is then compiled into `dist/tailwind.css` by running `tailwind compile`:
+The `src/tailwind.css` file is then compiled into `dist/tailwind.css` by running `tailwind build`:
 
 ```sh
-plain tailwind compile
+plain tailwind build
 ```
 
 When you're working locally, add `--watch` to automatically compile as changes are made:
 
 ```sh
-plain tailwind compile --watch
+plain tailwind build --watch
 ```
 
 Then include the compiled CSS in your base template `<head>`:
@@ -111,8 +111,8 @@ it should be done in `app/static/src/tailwind.css`.
 
 ## Deployment
 
-If possible, you should add `static/dist/tailwind.css` to your `.gitignore` and run the `plain tailwind compile --minify` command as a part of your deployment pipeline.
+If possible, you should add `static/dist/tailwind.css` to your `.gitignore` and run the `plain tailwind build --minify` command as a part of your deployment pipeline.
 
-When you run `plain tailwind compile`, it will automatically check whether the Tailwind standalone CLI has been installed, and install it if it isn't.
+When you run `plain tailwind build`, it will automatically check whether the Tailwind standalone CLI has been installed, and install it if it isn't.
 
 When using Plain on Heroku, we do this for you automatically in our [Plain buildpack](https://github.com/plainpackages/heroku-buildpack-plain/blob/master/bin/files/post_compile).

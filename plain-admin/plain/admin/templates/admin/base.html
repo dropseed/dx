@@ -22,9 +22,9 @@
 </head>
 <body class="flex min-h-screen bg-stone-950">
 
-    <nav class="fixed top-0 left-0 right-0 h-14 px-4 py-2 flex items-center justify-evenly text-sm text-white/70">
+    <nav class="fixed top-0 left-0 right-0 h-14 px-4 py-2 flex items-center justify-between sm:justify-evenly text-sm text-white/70 space-x-3">
         <div class="flex items-center space-x-2">
-            <button type="button" data-toggle="#admin-sidebar,#admin-content" class="mr-1 lg:hidden">
+            <button type="button" data-toggle="#admin-sidebar,#admin-content" class="lg:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-5 h-5 bi bi-list" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
                 </svg>
@@ -32,11 +32,6 @@
             </button>
 
             <a class="inline-flex items-center text-stone-300" href="{{ url('admin:index') }}">
-                <svg class="w-5 h-5 mr-2" width="160" height="125" viewBox="0 0 160 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="4.78467" y="4.79785" width="150.978" height="115.404" rx="5" stroke="#ffffff" stroke-width="8"/>
-                    <path d="M151.762 60.3705C99.2596 39.3233 80.202 66.8232 8.78467 60.3705V116.2H151.762V60.3705Z" fill="#ffffff"/>
-                    <path d="M51.104 8.08887H108.179V10.7668C108.179 12.6998 106.612 14.2668 104.679 14.2668H54.604C52.671 14.2668 51.104 12.6998 51.104 10.7668V8.08887Z" fill="#ffffff" stroke="#ffffff"/>
-                </svg>
                 <span class="text-stone-400">Admin</span>
             </a>
 
@@ -50,14 +45,14 @@
             #}
         </div>
 
-        <form method="GET" action="{{ url('admin:search') }}" class="flex flex-1 justify-center">
-            <div class="relative max-w-xs">
+        <form method="GET" action="{{ url('admin:search') }}" class="hidden sm:flex flex-1 justify-center">
+            <div class="relative max-w-xs flex flex-1">
                 <label for="query" class="sr-only">Search</label>
                 <input
                     type="text"
                     name="query"
                     id="query"
-                    class="block w-full pr-10 pl-10 placeholder:text-center text-sm border-gray-200/10 text-white rounded-md focus:border-blue-500 focus:ring-blue-500 bg-white/5 py-1"
+                    class="block w-full pr-10 pl-10 placeholder:text-white/30 placeholder:text-center text-sm border-gray-200/10 text-white rounded-md focus:border-blue-500 focus:ring-blue-500 bg-white/5 py-1"
                     placeholder="Search everything"
                     value="{{ global_search_query|default('') }}"
                     >
@@ -83,7 +78,7 @@
                     {% for view in views %}
                     {% set url = view.get_view_url() %}
                     <a
-                        {% if url == request.path %}data-active{% endif %}
+                        {% if url == request.path or view in parent_view_classes %}data-active{% endif %}
                         class="data-[active]:bg-white/20 data-[active]:text-white flex items-center px-2 py-1 mt-px -mx-2 text-sm rounded hover:text-stone-300 text-stone-400/80 hover:bg-white/5"
                         href="{{ url }}">
                         {{ view.get_nav_title() }}
@@ -99,23 +94,26 @@
                     <div class="text-xs tracking-wide text-stone-500">Recent</div>
                 </div> -->
             </div>
-            <div class="flex items-center justify-between mt-8 text-sm pb-3 pt-3 text-stone-400 sticky bottom-0 bg-stone-950">
-                <div class="flex items-center truncate">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-6 h-6 mr-1.5 bi bi-person-circle" viewBox="0 0 16 16">
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                    </svg>
-                    <span class="truncate">
-                        {{ request.user }}
-                    </span>
+            <div class="mt-8 flex flex-col text-sm pb-3 pt-3 text-stone-400 sticky bottom-0 bg-stone-950">
+                <a class="sm:hidden py-1" href="{{ url('admin:search') }}">Global search</a>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center truncate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-6 h-6 mr-1.5 bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        <span class="truncate">
+                            {{ request.user }}
+                        </span>
+                    </div>
+                    <a class="ml-2 hover:text-white hover:underline flex-shrink-0" href="{{ url('logout') }}">Log out</a>
                 </div>
-                <a class="ml-2 hover:text-white hover:underline flex-shrink-0" href="{{ url('logout') }}">Log out</a>
             </div>
         </aside>
 
         <div id="admin-content" data-toggle-class="x" class="absolute top-0 bottom-0 right-0 left-0 lg:left-52 bg-stone-900 border border-white/5 text-white rounded-lg overflow-auto">
-            <div class="flex items-center justify-between px-4 lg:px-8 sticky z-10 top-0 bg-stone-900 border-b border-white/10 py-2 lg:py-3">
-                <div>
+            <div class="flex space-x-3 items-center justify-between px-4 lg:px-8 sticky z-10 top-0 left-0 right-0 bg-stone-900 border-b border-white/10 py-2 lg:py-3">
+                <div class="flex-shrink-0">
                 {% block header %}
                     <div class="flex items-center">
                         {% block image %}
@@ -124,7 +122,7 @@
                             {% endif %}
                         {% endblock %}
                         <div class="max-w-prose break-all">
-                            <h1 class="text-xl text-white/90">
+                            <h1 class="sm:text-xl text-white/90">
                                 {% block title %}{{ title }}{% endblock %}
                             </h1>
                             {% if description %}<p class="mt-1 text-sm text-gray-500">{{ description }}</p>{% endif %}
@@ -132,7 +130,8 @@
                     </div>
                 {% endblock %}
                 </div>
-                <div class="flex space-x-2 text-sm actions">
+                <div class="flex space-x-2 text-sm actions overflow-auto p-1">
+                    {# Styled with admin.css for easier adding of elements #}
                     {% block actions %}{% endblock %}
                     {% for link, url in links.items() %}
                     <a href="{{ url }}">{{ link }}</a>
@@ -150,7 +149,7 @@
             </div>
             {% endif %}
 
-            <main class="px-4 py-6 lg:px-8 text-white/70">{% block content %}{% endblock %}</main>
+            <main class="px-4 py-6 lg:px-8 text-white/80">{% block content %}{% endblock %}</main>
         </div>
 
     </div>

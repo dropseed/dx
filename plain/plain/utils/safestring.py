@@ -44,9 +44,6 @@ class SafeString(str, SafeData):
         return self
 
 
-SafeText = SafeString  # For backwards compatibility since Plain 2.0.
-
-
 def _safety_decorator(safety_marker, func):
     @wraps(func)
     def wrapper(*args, **kwargs):

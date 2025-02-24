@@ -276,8 +276,8 @@ def preflight_checks(package_label, deploy, fail_level, databases):
     default=True,
     help="Compress the assets",
 )
-def compile(keep_original, fingerprint, compress):
-    """Compile static assets"""
+def build(keep_original, fingerprint, compress):
+    """Pre-deployment build step (compile assets, css, js, etc.)"""
 
     if not keep_original and not fingerprint:
         click.secho(
@@ -287,7 +287,7 @@ def compile(keep_original, fingerprint, compress):
         )
         sys.exit(1)
 
-    # Run user-defined compile commands first
+    # Run user-defined build commands first
     pyproject_path = plain.runtime.APP_PATH.parent / "pyproject.toml"
     if pyproject_path.exists():
         with pyproject_path.open("rb") as f:
@@ -296,7 +296,7 @@ def compile(keep_original, fingerprint, compress):
         for name, data in (
             pyproject.get("tool", {})
             .get("plain", {})
-            .get("compile", {})
+            .get("build", {})
             .get("run", {})
             .items()
         ):
@@ -307,8 +307,8 @@ def compile(keep_original, fingerprint, compress):
                 click.secho(f"Error in {name} (exit {result.returncode})", fg="red")
                 sys.exit(result.returncode)
 
-    # Then run installed package compile steps (like tailwind, typically should run last...)
-    for entry_point in entry_points(group="plain.assets.compile"):
+    # Then run installed package build steps (like tailwind, typically should run last...)
+    for entry_point in entry_points(group="plain.build"):
         click.secho(f"Running {entry_point.name}", bold=True)
         result = entry_point.load()()
         print()

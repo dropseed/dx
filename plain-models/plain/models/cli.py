@@ -28,6 +28,7 @@ from .migrations.recorder import MigrationRecorder
 from .migrations.state import ModelState, ProjectState
 from .migrations.utils import get_migration_name_timestamp
 from .migrations.writer import MigrationWriter
+from .registry import models_registry
 
 
 @click.group()
@@ -324,7 +325,7 @@ def makemigrations(
                 connection.alias, package_label, model_name=model._meta.object_name
             )
             for package_label in consistency_check_labels
-            for model in packages_registry.get_models(package_label=package_label)
+            for model in models_registry.get_models(package_label=package_label)
         ):
             loader.check_consistent_history(connection)
 
@@ -368,7 +369,7 @@ def makemigrations(
     # Set up autodetector
     autodetector = MigrationAutodetector(
         loader.project_state(),
-        ProjectState.from_packages_registry(packages_registry),
+        ProjectState.from_models_registry(models_registry),
         questioner,
     )
 
@@ -713,7 +714,7 @@ def migrate(
         # post_migrate signals have access to all models. Ensure that all models
         # are reloaded in case any are delayed.
         post_migrate_state.clear_delayed_packages_cache()
-        post_migrate_packages = post_migrate_state.packages_registry
+        post_migrate_packages = post_migrate_state.models_registry
 
         # Re-render models of real packages to include relationships now that
         # we've got a final state. This wouldn't be necessary if real packages
@@ -726,7 +727,7 @@ def migrate(
                 post_migrate_packages.unregister_model(*model_key)
         post_migrate_packages.render_multiple(
             [
-                ModelState.from_model(packages_registry.get_model(*model))
+                ModelState.from_model(models_registry.get_model(*model))
                 for model in model_keys
             ]
         )
@@ -737,7 +738,7 @@ def migrate(
         # how to fix it.
         autodetector = MigrationAutodetector(
             executor.loader.project_state(),
-            ProjectState.from_packages_registry(packages_registry),
+            ProjectState.from_models_registry(models_registry),
         )
         changes = autodetector.changes(graph=executor.loader.graph)
         if changes:

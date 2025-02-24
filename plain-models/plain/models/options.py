@@ -4,13 +4,13 @@ import inspect
 from collections import defaultdict
 
 from plain.exceptions import FieldDoesNotExist
+from plain.models import models_registry
 from plain.models.constraints import UniqueConstraint
 from plain.models.db import connections
 from plain.models.fields import BigAutoField
 from plain.models.fields.proxy import OrderWrt
 from plain.models.manager import Manager
 from plain.models.query_utils import PathInfo
-from plain.packages import packages_registry
 from plain.runtime import settings
 from plain.utils.datastructures import ImmutableList, OrderedSet
 from plain.utils.functional import cached_property
@@ -36,7 +36,7 @@ DEFAULT_NAMES = (
     "managed",
     "swappable",
     "auto_created",
-    "packages_registry",
+    "models_registry",
     "select_on_save",
     "default_related_name",
     "required_db_features",
@@ -67,7 +67,7 @@ class Options:
     }
     REVERSE_PROPERTIES = {"related_objects", "fields_map", "_relation_tree"}
 
-    default_packages_registry = packages_registry
+    default_models_registry = models_registry
 
     def __init__(self, meta, package_label=None):
         self._get_fields_cache = {}
@@ -109,7 +109,7 @@ class Options:
         self.related_fkey_lookups = []
 
         # A custom app registry to use, if you're making a separate model set.
-        self.packages_registry = self.default_packages_registry
+        self.models_registry = self.default_models_registry
 
         self.default_related_name = None
 
@@ -120,11 +120,6 @@ class Options:
     @property
     def label_lower(self):
         return f"{self.package_label}.{self.model_name}"
-
-    @property
-    def package_config(self):
-        # Don't go through get_package_config to avoid triggering imports.
-        return self.packages_registry.package_configs.get(self.package_label)
 
     def contribute_to_class(self, cls, name):
         from plain.models.backends.utils import truncate_name
@@ -548,7 +543,7 @@ class Options:
         except KeyError:
             # If the app registry is not ready, reverse fields are
             # unavailable, therefore we throw a FieldDoesNotExist exception.
-            if not self.packages_registry.models_ready:
+            if not self.models_registry.ready:
                 raise FieldDoesNotExist(
                     f"{self.object_name} has no field named '{field_name}'. The app cache isn't ready yet, "
                     "so if this is an auto-created related field, it won't "
@@ -675,7 +670,7 @@ class Options:
         """
         related_objects_graph = defaultdict(list)
 
-        all_models = self.packages_registry.get_models(include_auto_created=True)
+        all_models = self.models_registry.get_models(include_auto_created=True)
         for model in all_models:
             opts = model._meta
             # Abstract model's fields are copied to child models, hence we will

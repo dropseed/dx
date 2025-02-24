@@ -3,10 +3,11 @@ from importlib.util import find_spec
 
 from plain.packages import (
     PackageConfig,
-    models_registry,
     packages_registry,
     register_config,
 )
+
+from .registry import models_registry
 
 MODELS_MODULE_NAME = "models"
 

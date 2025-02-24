@@ -223,6 +223,7 @@ models_registry = ModelsRegistry()
 
 # Decorator to register a model (using the internal registry for the correct state).
 def register_model(model_class):
-    return model_class._meta.models_registry.register_model(
+    model_class._meta.models_registry.register_model(
         model_class._meta.package_label, model_class
     )
+    return model_class

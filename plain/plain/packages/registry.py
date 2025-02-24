@@ -70,7 +70,7 @@ class PackagesRegistry:
                 if isinstance(entry, PackageConfig):
                     # Some instances of the registry pass in the
                     # PackageConfig directly...
-                    self.register_config(entry)
+                    self.register_config(package_config=entry)
                 else:
                     try:
                         import_module(f"{entry}.{CONFIG_MODULE_NAME}")
@@ -87,9 +87,8 @@ class PackagesRegistry:
 
                     if not entry_config:
                         # Use PackageConfig class as-is, without any customization.
-                        entry_config = self.register_config(
-                            PackageConfig, module_name=entry
-                        )
+                        auto_package_config = PackageConfig(entry)
+                        entry_config = self.register_config(auto_package_config)
 
             # Make sure we have the same number of configs as we have installed packages
             if len(self.package_configs) != len(installed_packages):
@@ -170,7 +169,7 @@ class PackagesRegistry:
         if candidates:
             return sorted(candidates, key=lambda ac: -len(ac.name))[0]
 
-    def register_config(self, package_config, module_name=""):
+    def register_config(self, package_config):
         """
         Add a config to the registry.
 
@@ -180,19 +179,6 @@ class PackagesRegistry:
         class Config(PackageConfig):
             pass
         """
-        if not module_name:
-            module_name = package_config.__module__
-
-        # If it is in .config like expected, return the parent module name
-        if module_name.endswith(f".{CONFIG_MODULE_NAME}"):
-            module_name = module_name[: -len(CONFIG_MODULE_NAME) - 1]
-
-        if isinstance(package_config, type) and issubclass(
-            package_config, PackageConfig
-        ):
-            # A class was passed, so init it
-            package_config = package_config(module_name)
-
         if package_config.label in self.package_configs:
             raise ImproperlyConfigured(
                 f"Package labels aren't unique, duplicates: {package_config.label}"
@@ -202,5 +188,20 @@ class PackagesRegistry:
 
         return package_config
 
+
 packages_registry = PackagesRegistry(installed_packages=None)
-register_config = packages_registry.register_config
+
+
+def register_config(package_config_class):
+    """A decorator to register a PackageConfig subclass."""
+    module_name = package_config_class.__module__
+
+    # If it is in .config like expected, return the parent module name
+    if module_name.endswith(f".{CONFIG_MODULE_NAME}"):
+        module_name = module_name[: -len(CONFIG_MODULE_NAME) - 1]
+
+    package_config = package_config_class(module_name)
+
+    packages_registry.register_config(package_config)
+
+    return package_config_class

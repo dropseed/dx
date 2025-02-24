@@ -14,7 +14,7 @@ from plain.exceptions import (
     ObjectDoesNotExist,
     ValidationError,
 )
-from plain.models import transaction
+from plain.models import models_registry, transaction
 from plain.models.aggregates import Max
 from plain.models.constants import LOOKUP_SEP
 from plain.models.constraints import CheckConstraint, UniqueConstraint
@@ -1366,7 +1366,7 @@ class Model(AltersData, metaclass=ModelBase):
         errors = []
         if cls._meta.swapped:
             try:
-                packages_registry.get_model(cls._meta.swapped)
+                models_registry.get_model(cls._meta.swapped)
             except ValueError:
                 errors.append(
                     preflight.Error(
@@ -2168,7 +2168,7 @@ def make_foreign_order_accessors(model, related_model):
 def model_unpickle(model_id):
     """Used to unpickle Model subclasses with deferred fields."""
     if isinstance(model_id, tuple):
-        model = packages_registry.get_model(*model_id)
+        model = models_registry.get_model(*model_id)
     else:
         # Backwards compat - the model was cached directly in earlier versions.
         model = model_id

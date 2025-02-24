@@ -1,6 +1,6 @@
 from plain.csrf.middleware import rotate_token
 from plain.exceptions import ImproperlyConfigured
-from plain.packages import packages_registry as plain_packages
+from plain.models import models_registry
 from plain.runtime import settings
 from plain.utils.crypto import constant_time_compare, salted_hmac
 
@@ -88,7 +88,7 @@ def get_user_model():
     Return the User model that is active in this project.
     """
     try:
-        return plain_packages.get_model(settings.AUTH_USER_MODEL, require_ready=False)
+        return models_registry.get_model(settings.AUTH_USER_MODEL, require_ready=False)
     except ValueError:
         raise ImproperlyConfigured(
             "AUTH_USER_MODEL must be of the form 'package_label.model_name'"

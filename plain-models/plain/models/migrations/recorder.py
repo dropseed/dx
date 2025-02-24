@@ -1,6 +1,6 @@
 from plain import models
 from plain.models.db import DatabaseError
-from plain.packages.registry import PackagesRegistry
+from plain.models.registry import ModelsRegistry
 from plain.utils.functional import classproperty
 from plain.utils.timezone import now
 
@@ -36,7 +36,7 @@ class MigrationRecorder:
                 applied = models.DateTimeField(default=now)
 
                 class Meta:
-                    packages_registry = PackagesRegistry()
+                    models_registry = ModelsRegistry()
                     package_label = "migrations"
                     db_table = "plainmigrations"
 

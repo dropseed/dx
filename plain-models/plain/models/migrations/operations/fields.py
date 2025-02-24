@@ -99,9 +99,9 @@ class AddField(FieldOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        to_model = to_state.packages_registry.get_model(package_label, self.model_name)
+        to_model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
-            from_model = from_state.packages_registry.get_model(
+            from_model = from_state.models_registry.get_model(
                 package_label, self.model_name
             )
             field = to_model._meta.get_field(self.name)
@@ -160,7 +160,7 @@ class RemoveField(FieldOperation):
         state.remove_field(package_label, self.model_name_lower, self.name)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        from_model = from_state.packages_registry.get_model(
+        from_model = from_state.models_registry.get_model(
             package_label, self.model_name
         )
         if self.allow_migrate_model(schema_editor.connection.alias, from_model):
@@ -216,9 +216,9 @@ class AlterField(FieldOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        to_model = to_state.packages_registry.get_model(package_label, self.model_name)
+        to_model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
-            from_model = from_state.packages_registry.get_model(
+            from_model = from_state.models_registry.get_model(
                 package_label, self.model_name
             )
             from_field = from_model._meta.get_field(self.name)
@@ -287,9 +287,9 @@ class RenameField(FieldOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        to_model = to_state.packages_registry.get_model(package_label, self.model_name)
+        to_model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
-            from_model = from_state.packages_registry.get_model(
+            from_model = from_state.models_registry.get_model(
                 package_label, self.model_name
             )
             schema_editor.alter_field(

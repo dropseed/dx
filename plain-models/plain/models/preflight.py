@@ -2,6 +2,7 @@ import inspect
 from collections import defaultdict
 from itertools import chain
 
+from plain.models.registry import models_registry
 from plain.packages import packages_registry
 from plain.preflight import Error, Warning, register
 from plain.runtime import settings
@@ -28,10 +29,10 @@ def check_all_models(package_configs=None, **kwargs):
     constraints = defaultdict(list)
     errors = []
     if package_configs is None:
-        models = packages_registry.get_models()
+        models = models_registry.get_models()
     else:
         models = chain.from_iterable(
-            packages_registry.get_models(package_label=package_config.label)
+            models_registry.get_models(package_label=package_config.label)
             for package_config in package_configs
         )
     for model in models:
@@ -100,7 +101,7 @@ def check_all_models(package_configs=None, **kwargs):
     return errors
 
 
-def _check_lazy_references(packages_registry, ignore=None):
+def _check_lazy_references(models_registry, packages_registry, ignore=None):
     """
     Ensure all lazy (i.e. string) model references have been resolved.
 
@@ -111,7 +112,7 @@ def _check_lazy_references(packages_registry, ignore=None):
     The ignore parameter is used by StatePackages to exclude swappable models from
     this check.
     """
-    pending_models = set(packages_registry._pending_operations) - (ignore or set())
+    pending_models = set(models_registry._pending_operations) - (ignore or set())
 
     # Short circuit if there aren't any errors.
     if not pending_models:
@@ -190,7 +191,7 @@ def _check_lazy_references(packages_registry, ignore=None):
             (
                 build_error(model_key, *extract_operation(func))
                 for model_key in pending_models
-                for func in packages_registry._pending_operations[model_key]
+                for func in models_registry._pending_operations[model_key]
             ),
         ),
         key=lambda error: error.msg,
@@ -199,7 +200,7 @@ def _check_lazy_references(packages_registry, ignore=None):
 
 @register
 def check_lazy_references(package_configs=None, **kwargs):
-    return _check_lazy_references(packages_registry)
+    return _check_lazy_references(models_registry, packages_registry)
 
 
 @register

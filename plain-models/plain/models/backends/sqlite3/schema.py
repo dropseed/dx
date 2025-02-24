@@ -7,8 +7,8 @@ from plain.models.backends.ddl_references import Statement
 from plain.models.backends.utils import strip_quotes
 from plain.models.constraints import UniqueConstraint
 from plain.models.db import NotSupportedError
+from plain.models.registry import ModelsRegistry
 from plain.models.transaction import atomic
-from plain.packages.registry import PackagesRegistry
 
 
 class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
@@ -252,7 +252,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             ):
                 return self.delete_model(delete_field.remote_field.through)
         # Work inside a new app registry
-        packages_registry = PackagesRegistry()
+        models_registry = ModelsRegistry()
 
         indexes = model._meta.indexes
         if delete_field:
@@ -277,7 +277,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             "db_table": model._meta.db_table,
             "indexes": indexes,
             "constraints": constraints,
-            "packages_registry": packages_registry,
+            "models_registry": models_registry,
         }
         meta = type("Meta", (), meta_contents)
         body_copy["Meta"] = meta
@@ -291,7 +291,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             "db_table": f"new__{strip_quotes(model._meta.db_table)}",
             "indexes": indexes,
             "constraints": constraints,
-            "packages_registry": packages_registry,
+            "models_registry": models_registry,
         }
         meta = type("Meta", (), meta_contents)
         body_copy["Meta"] = meta

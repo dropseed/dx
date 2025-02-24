@@ -90,7 +90,7 @@ class CreateModel(ModelOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = to_state.packages_registry.get_model(package_label, self.name)
+        model = to_state.models_registry.get_model(package_label, self.name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             schema_editor.create_model(model)
 
@@ -269,7 +269,7 @@ class DeleteModel(ModelOperation):
         state.remove_model(package_label, self.name_lower)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = from_state.packages_registry.get_model(package_label, self.name)
+        model = from_state.models_registry.get_model(package_label, self.name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             schema_editor.delete_model(model)
 
@@ -313,9 +313,9 @@ class RenameModel(ModelOperation):
         state.rename_model(package_label, self.old_name, self.new_name)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        new_model = to_state.packages_registry.get_model(package_label, self.new_name)
+        new_model = to_state.models_registry.get_model(package_label, self.new_name)
         if self.allow_migrate_model(schema_editor.connection.alias, new_model):
-            old_model = from_state.packages_registry.get_model(
+            old_model = from_state.models_registry.get_model(
                 package_label, self.old_name
             )
             # Move the main table
@@ -335,7 +335,7 @@ class RenameModel(ModelOperation):
                         related_object.related_model._meta.package_label,
                         related_object.related_model._meta.model_name,
                     )
-                to_field = to_state.packages_registry.get_model(
+                to_field = to_state.models_registry.get_model(
                     *related_key
                 )._meta.get_field(related_object.field.name)
                 schema_editor.alter_field(
@@ -422,9 +422,9 @@ class AlterModelTable(ModelOptionOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        new_model = to_state.packages_registry.get_model(package_label, self.name)
+        new_model = to_state.models_registry.get_model(package_label, self.name)
         if self.allow_migrate_model(schema_editor.connection.alias, new_model):
-            old_model = from_state.packages_registry.get_model(package_label, self.name)
+            old_model = from_state.models_registry.get_model(package_label, self.name)
             schema_editor.alter_db_table(
                 new_model,
                 old_model._meta.db_table,
@@ -470,9 +470,9 @@ class AlterModelTableComment(ModelOptionOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        new_model = to_state.packages_registry.get_model(package_label, self.name)
+        new_model = to_state.models_registry.get_model(package_label, self.name)
         if self.allow_migrate_model(schema_editor.connection.alias, new_model):
-            old_model = from_state.packages_registry.get_model(package_label, self.name)
+            old_model = from_state.models_registry.get_model(package_label, self.name)
             schema_editor.alter_db_table_comment(
                 new_model,
                 old_model._meta.db_table_comment,
@@ -511,11 +511,9 @@ class AlterOrderWithRespectTo(ModelOptionOperation):
         )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        to_model = to_state.packages_registry.get_model(package_label, self.name)
+        to_model = to_state.models_registry.get_model(package_label, self.name)
         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
-            from_model = from_state.packages_registry.get_model(
-                package_label, self.name
-            )
+            from_model = from_state.models_registry.get_model(package_label, self.name)
             # Remove a field if we need to
             if (
                 from_model._meta.order_with_respect_to
@@ -651,7 +649,7 @@ class AddIndex(IndexOperation):
         state.add_index(package_label, self.model_name_lower, self.index)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = to_state.packages_registry.get_model(package_label, self.model_name)
+        model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             schema_editor.add_index(model, self.index)
 
@@ -695,7 +693,7 @@ class RemoveIndex(IndexOperation):
         state.remove_index(package_label, self.model_name_lower, self.name)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = from_state.packages_registry.get_model(package_label, self.model_name)
+        model = from_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             from_model_state = from_state.models[package_label, self.model_name_lower]
             index = from_model_state.get_index_by_name(self.name)
@@ -770,12 +768,12 @@ class RenameIndex(IndexOperation):
             )
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = to_state.packages_registry.get_model(package_label, self.model_name)
+        model = to_state.models_registry.get_model(package_label, self.model_name)
         if not self.allow_migrate_model(schema_editor.connection.alias, model):
             return
 
         if self.old_fields:
-            from_model = from_state.packages_registry.get_model(
+            from_model = from_state.models_registry.get_model(
                 package_label, self.model_name
             )
             columns = [
@@ -856,7 +854,7 @@ class AddConstraint(IndexOperation):
         state.add_constraint(package_label, self.model_name_lower, self.constraint)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = to_state.packages_registry.get_model(package_label, self.model_name)
+        model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             schema_editor.add_constraint(model, self.constraint)
 
@@ -889,7 +887,7 @@ class RemoveConstraint(IndexOperation):
         state.remove_constraint(package_label, self.model_name_lower, self.name)
 
     def database_forwards(self, package_label, schema_editor, from_state, to_state):
-        model = to_state.packages_registry.get_model(package_label, self.model_name)
+        model = to_state.models_registry.get_model(package_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, model):
             from_model_state = from_state.models[package_label, self.model_name_lower]
             constraint = from_model_state.get_constraint_by_name(self.name)

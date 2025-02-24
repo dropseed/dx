@@ -13,7 +13,6 @@ from plain.models.constants import LOOKUP_SEP
 from plain.models.db import connection, connections, router
 from plain.models.enums import ChoicesMeta
 from plain.models.query_utils import DeferredAttribute, RegisterLookupMixin
-from plain.packages import packages_registry
 from plain.runtime import settings
 from plain.utils import timezone
 from plain.utils.datastructures import DictWrapper
@@ -27,6 +26,8 @@ from plain.utils.duration import duration_microseconds, duration_string
 from plain.utils.functional import Promise, cached_property
 from plain.utils.ipv6 import clean_ipv6_address
 from plain.utils.itercompat import is_iterable
+
+from ..registry import models_registry
 
 __all__ = [
     "AutoField",
@@ -77,7 +78,7 @@ BLANK_CHOICE_DASH = [("", "---------")]
 
 
 def _load_field(package_label, model_name, field_name):
-    return packages_registry.get_model(package_label, model_name)._meta.get_field(
+    return models_registry.get_model(package_label, model_name)._meta.get_field(
         field_name
     )
 

@@ -9,12 +9,11 @@ from plain.models.db import connection, router
 from plain.models.deletion import CASCADE, SET_DEFAULT, SET_NULL
 from plain.models.query_utils import PathInfo, Q
 from plain.models.utils import make_model_tuple
-from plain.packages import packages_registry
 from plain.runtime import settings
 from plain.runtime.user_settings import SettingsReference
 from plain.utils.functional import cached_property
 
-from ..registry import register_model
+from ..registry import models_registry, register_model
 from . import Field
 from .mixins import FieldCacheMixin
 from .related_descriptors import (
@@ -77,12 +76,12 @@ def lazy_related_operation(function, model, *related_models, **kwargs):
     references will be resolved relative to `model`.
 
     This is a convenience wrapper for `Packages.lazy_model_operation` - the app
-    registry model used is the one found in `model._meta.packages_registry`.
+    registry model used is the one found in `model._meta.models_registry`.
     """
     models = [model] + [resolve_relation(model, rel) for rel in related_models]
     model_keys = (make_model_tuple(m) for m in models)
-    packages_registry = model._meta.packages_registry
-    return packages_registry.lazy_model_operation(
+    models_registry = model._meta.models_registry
+    return models_registry.lazy_model_operation(
         partial(function, **kwargs), *model_keys
     )
 
@@ -111,7 +110,7 @@ class RelatedField(FieldCacheMixin, Field):
     @cached_property
     def related_model(self):
         # Can't cache this property until all the models are loaded.
-        packages_registry.check_models_ready()
+        models_registry.check_ready()
         return self.remote_field.model
 
     def check(self, **kwargs):
@@ -180,7 +179,7 @@ class RelatedField(FieldCacheMixin, Field):
 
     def _check_relation_model_exists(self):
         rel_is_missing = (
-            self.remote_field.model not in self.opts.packages_registry.get_models()
+            self.remote_field.model not in self.opts.models_registry.get_models()
         )
         rel_is_string = isinstance(self.remote_field.model, str)
         model_name = (
@@ -203,7 +202,7 @@ class RelatedField(FieldCacheMixin, Field):
 
     def _check_referencing_to_swapped_model(self):
         if (
-            self.remote_field.model not in self.opts.packages_registry.get_models()
+            self.remote_field.model not in self.opts.models_registry.get_models()
             and not isinstance(self.remote_field.model, str)
             and self.remote_field.model._meta.swapped
         ):
@@ -420,7 +419,7 @@ class RelatedField(FieldCacheMixin, Field):
                 to_string = self.remote_field.model
             else:
                 to_string = self.remote_field.model._meta.label
-            return packages_registry.get_swappable_settings_name(to_string)
+            return models_registry.get_swappable_settings_name(to_string)
         return None
 
     def set_attributes_from_rel(self):
@@ -1202,7 +1201,7 @@ def create_many_to_many_intermediary_model(field, klass):
                     name=f"{klass._meta.package_label}_{name.lower()}_unique",
                 )
             ],
-            "packages_registry": field.model._meta.packages_registry,
+            "models_registry": field.model._meta.models_registry,
         },
     )
     # Construct and return the new class.
@@ -1374,7 +1373,7 @@ class ManyToManyField(RelatedField):
 
         errors = []
 
-        if self.remote_field.through not in self.opts.packages_registry.get_models(
+        if self.remote_field.through not in self.opts.models_registry.get_models(
             include_auto_created=True
         ):
             # The relationship model is not installed.
@@ -1583,9 +1582,7 @@ class ManyToManyField(RelatedField):
             return []
         registered_tables = {
             model._meta.db_table: model
-            for model in self.opts.packages_registry.get_models(
-                include_auto_created=True
-            )
+            for model in self.opts.models_registry.get_models(include_auto_created=True)
             if model != self.remote_field.through and model._meta.managed
         }
         m2m_db_table = self.m2m_db_table()

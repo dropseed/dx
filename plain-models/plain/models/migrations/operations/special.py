@@ -139,7 +139,7 @@ class RunPython(Operation):
             # object, representing the versioned models as an app registry.
             # We could try to override the global cache, but then people will still
             # use direct imports, so we go with a documentation approach instead.
-            self.code(from_state.packages_registry, schema_editor)
+            self.code(from_state.models_registry, schema_editor)
 
     def describe(self):
         return "Raw Python operation"

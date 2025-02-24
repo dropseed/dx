@@ -116,7 +116,7 @@ class ModelsRegistry:
 
         return model
 
-    def get_registered_model(self, package_label, model_name):
+    def _get_registered_model(self, package_label, model_name):
         """
         Similar to get_model(), but doesn't require that an app exists with
         the given package_label.
@@ -202,7 +202,7 @@ class ModelsRegistry:
             # pending operations for the model, where it will be executed with
             # the model class as its sole argument once the model is ready.
             try:
-                model_class = self.get_registered_model(*next_model)
+                model_class = self._get_registered_model(*next_model)
             except LookupError:
                 self._pending_operations[next_model].append(apply_next_model)
             else:
